@@ -15,11 +15,21 @@ CREATE DATABASE IF NOT EXISTS SpotifyClone;
   CREATE TABLE SpotifyClone.albums (
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     album VARCHAR(100),
-    artist_id INT,
     year_of_release_id INT,
-    CONSTRAINT `id_artist` FOREIGN KEY(`artist_id`) REFERENCES `SpotifyClone`.`artists`(`id`),
-    CONSTRAINT `id_year_of_release` FOREIGN KEY(`year_of_release_id`) REFERENCES `SpotifyClone`.`year_of_release`(`id`)
+		artist_id INT,
+		FOREIGN KEY(`year_of_release_id`) REFERENCES `SpotifyClone`.`year_of_release`(`id`),
+		FOREIGN KEY(`artist_id`) REFERENCES `SpotifyClone`.`artists`(`id`)
 	) engine = InnoDB;
+
+	CREATE TABLE SpotifyClone.songs(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    song VARCHAR(100),
+    duration INT,
+    album_id INT,
+		artist_id INT,
+		FOREIGN KEY(`artist_id`) REFERENCES `SpotifyClone`.`artists`(`id`),
+    FOREIGN KEY(`album_id`) REFERENCES `SpotifyClone`.`albums`(`id`)
+	);
     
   CREATE TABLE `SpotifyClone`.`plans`(
     id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -27,22 +37,14 @@ CREATE DATABASE IF NOT EXISTS SpotifyClone;
     value_plan FLOAT
 	) engine = InnoDB;
 
-	CREATE TABLE `SpotifyClone`.`user`(
+	CREATE TABLE `SpotifyClone`.`users`(
     id  INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nome_completo VARCHAR(45) UNIQUE,
-    idade INT,
+    age INT,
     signature_date DATE,
     plano_id INT,
     FOREIGN KEY(`plano_id`) REFERENCES `SpotifyClone`.`plans`(`id`)
 	) engine = InnoDB;
-    
-  CREATE TABLE SpotifyClone.songs(
-    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    song VARCHAR(100),
-    duration INT,
-    album_id INT,
-    FOREIGN KEY(`album_id`) REFERENCES `SpotifyClone`.`albums`(`id`)
-	);
 
 	CREATE TABLE `SpotifyClone`.`reproduction_history`(
     reproduction_date DATETIME,
@@ -50,14 +52,14 @@ CREATE DATABASE IF NOT EXISTS SpotifyClone;
     user_id int,
     PRIMARY KEY(song_id, user_id),
     FOREIGN KEY(`song_id`) REFERENCES songs(id),
-    FOREIGN KEY(`user_id`) REFERENCES `user`(id)
+    FOREIGN KEY(`user_id`) REFERENCES `users`(id)
 	) engine = InnoDB;
     
-    CREATE TABLE SpotifyClone.follow_artists (  
+  CREATE TABLE SpotifyClone.follow_artists (  
 	user_id INT, 
 	artist_id INT,
   PRIMARY KEY(user_id, artist_id),
-	FOREIGN KEY(user_id) REFERENCES `user`(id),
+	FOREIGN KEY(user_id) REFERENCES `users`(id),
 	FOREIGN KEY(artist_id) REFERENCES artists(id)
 	) engine = InnoDB;
 
@@ -102,8 +104,8 @@ VALUES
 	(DEFAULT, 'university', 5.99),
 	(DEFAULT, 'guys', 6.99);
     
-INSERT INTO SpotifyClone.`user`
-	(id, nome_completo, idade, signature_date, plano_id )
+INSERT INTO SpotifyClone.`users`
+	(id, nome_completo, age, signature_date, plano_id )
 VALUES
 	(DEFAULT, 'Barbara Liskov', 82, '2019-10-20', 1 ),
 	(DEFAULT, 'Robert Cecil Martin', 58, '2017-01-06', 1),
@@ -117,18 +119,18 @@ VALUES
 	(DEFAULT, 'Jorge Amado', 58, '2017-02-17', 4);
     
 INSERT INTO SpotifyClone.songs
-	(id, song, duration, album_id)
+	(id, song, duration, album_id, artist_id )
 VALUES
-	(DEFAULT, 'BREAK MY SOUL', 279, 1),
-	(DEFAULT, 'VIRGO’S GROOVE', 369, 1),
-	(DEFAULT, 'ALIEN SUPERSTAR', 116, 1),
-	(DEFAULT, 'Don’t Stop Me Now', 203, 2),
-	(DEFAULT, 'Under Pressure', 152, 3),
-	(DEFAULT, 'Como Nossos Pais', 105, 4),
-	(DEFAULT, 'O Medo de Amar é o Medo de Ser Livre', 207, 5),
-	(DEFAULT, 'Samba em Paris', 267, 6),
-	(DEFAULT, 'The Bard’s Song', 244, 7),
-	(DEFAULT, 'Feeling Good', 100, 8);
+	(DEFAULT, 'BREAK MY SOUL', 279, 1, 1),
+	(DEFAULT, 'VIRGO’S GROOVE', 369, 1, 1),
+	(DEFAULT, 'ALIEN SUPERSTAR', 116, 1, 1),
+	(DEFAULT, 'Don’t Stop Me Now', 203, 2, 2),
+	(DEFAULT, 'Under Pressure', 152, 3, 2),
+	(DEFAULT, 'Como Nossos Pais', 105, 4, 3),
+	(DEFAULT, 'O Medo de Amar é o Medo de Ser Livre', 207, 5, 3),
+	(DEFAULT, 'Samba em Paris', 267, 6, 4),
+	(DEFAULT, 'The Bard’s Song', 244, 7, 5),
+	(DEFAULT, 'Feeling Good', 100, 8, 6);
 
 INSERT INTO SpotifyClone.reproduction_history
 	(reproduction_date, song_id, user_id )
